@@ -1,0 +1,29 @@
+# docker-compose.yml
+
+version: '3'
+services:
+  server:
+    image: postgrest/postgrest
+    ports:
+      - "3000:3000"
+    environment:
+      PGRST_DB_URI: postgres://authenticator:stc5u2Gh1@db:5432/heatview 
+      PGRST_DB_SCHEMA: api
+      PGRST_DB_ANON_ROLE: ghost #In production this role should not be the same as the one used for the connection
+      PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:3000
+      PGRST_JWT_SECRET: '{"kty":"RSA","e":"AQAB","kid":"83658183-0724-47fd-90d8-8dd73b514a9d","n":"sHNGThOnvqjL-ic5ycEtTqMFaELiTUTF6BNVbOyk7es9dfQWE3_KWprxqm7syBm0UWcL4zAXrKa8w3FXsOV8lCI_CM6CnmCpgv_Ab4vP9B6VGXAMnrnr9NZS6haxXcbh066cN3NUXrgMHeBnLdzQn86s0RHZWBYmyZ_wTUUhnSR50RoH9OTvePfevV41dvT-LFalk4DM0mTv5DilroxAcEL52NIF4cpYMV8qMMEcrqUG0T_Ysx1R7wsNpEJwdvOP3ZXDGFeRm4ATl8EjenKFaHj_hXFDa1X7MCwPj5JNDkURPGNbgkkvlrTuFvLg1fNHXr-QKxNOFsk0kXcim0jc2Q"}'
+      PGRST_ROLE_CLAIM_KEY: '.resource_access.apache.roles[0]'
+    depends_on:
+      - db
+  db:
+    build: ./content
+    container_name: postgres
+    # image: db_first_version
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: heatview
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: h34tv1ew
+    volumes:
+      - ./content/postgres-data:/var/lib/postgresql/data
